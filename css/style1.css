@@ -1,0 +1,53 @@
+@charset "UTF-8"
+
+;body {
+  font-family: "Noto Sans JP", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.wrapper{
+    width: 1080px;
+    margin: 0 auto;
+    padding: 60px;
+}
+
+.name{
+    font-size: 32px;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+}
+
+.container {
+    width: 760px;
+    padding: 64px 0;
+    margin: 0 auto;
+}
+
+.section-wrap{
+    margin-top: 40px;
+}
+
+.section-ttl{
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #6682ff;
+    padding: 8px 0  8px 8px;
+}
+
+.section-wrap p{
+    margin-top: 24px; 
+}
+
+.work-img{
+    margin-top: 8px;
+}
+
+.footer{
+    padding: 16px 0;
+    text-align: center;
+}
+
+.footer-cr{
+    font-size: 12px;
+}
