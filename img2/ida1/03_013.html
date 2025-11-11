@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Test</title>
+    <script type="text/javascript">
+    let ctx;
+    let cw;
+    let ch;
+    const loopNum = 100;
+    function init(){
+        let canvas = document.getElementById('mycanvas');
+        if(!canvas ||!canvas.getContext){
+            return false;
+        }
+        ctx = canvas.getContext('2d');
+        cw = canvas.width;
+        ch = canvas.height;
+        ctx.globalAlpha = 0.5;
+        draw();
+        setInterval("draw()",200);
+    }
+    function draw(){
+        ctx.fillStyle = "rgba(255,255,255,1)";
+        ctx.fillRect(0,0,cw,ch);
+        for (let i=0;i<loopNum;i++){
+            ctx.strokeStyle = "rgba("+getRandomColor()+","+getRandomColor()+","+
+            getRandomColor()+","+getRandomAlpha()+")";
+        ctx.fillStyle = "rgba("+getRandomColor()+","+
+        getRandomColor()+","+getRandomColor()+","+
+        getRandomAlpha()+")";
+        ctx.lineWidth = 1;
+        //ctx.fillRect(getRandomNum(cw),getRandomNum(ch), getRandomNum(cw),getRandomNum(ch));
+        ctx.beginPath();
+        ctx.moveTo(i*cw/loopNum,0);
+        ctx.lineTo(cw-i*cw/loopNum,ch);
+        ctx.stroke();
+        //ctx.beginPath();
+        //ctx.arc(getRandomNum(cw),getRandomNum(ch),
+        //getRandomNum(cw/2),0,360/180*Math.PI,true
+        //);
+        //ctx.stroke();
+        //ctx.fill();
+    }
+}
+    function getRandomNum(num){
+        return Math.floor(Math.random()*num);
+    }
+    function getRandomColor(){
+        return Math.floor(Math.random()*255);
+    }
+    function getRandomAlpha(){
+        return Math.random();
+    }
+    </script>
+</head>
+<body onload="init();">
+    <H1>Canvas Test</H1>
+    <canvas id="mycanvas" width="1000" height="800"></canvas>
+    
+</body>
+</html>

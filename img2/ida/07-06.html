@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔認識</title>
+    <style>
+        #container{
+            position: relative;
+        }
+        #video{
+            transform: scaleX(-1);
+        }
+        #canvas{
+            transform: scaleX(-1);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+   <!----> 
+   <div id="container">
+       <!--video-->
+       <video id="video" width="400" height="300" autoplay></video>
+       <!---->
+       <canvas id="canvas" width="400" height="300"></canvas>
+   </div>
+   <div id="dat"></div>
+   <!---->
+   <script src="js/clmtrackr.js"></script>
+   <script src="js/model_pca_20_svm.js"></script>
+   <script src="js/emotionClassifier.js"></script>
+   <script src="js/emotionModel.js"></script>
+   <script>
+       var video = document.getElementById("video");
+       var canvas = document.getElementById("canvas");
+       var context = canvas.getContext("2d");
+       var stampNose = new Image();
+       var stampEars = new Image();
+       stampNose.src = "img/nose.png";
+       stampEars.src = "img/ears.png";
+       var stampTear = new Image();
+       var stampSurp = new Image();
+       var stampEyes = new Image();
+       stampTear.src = "img/tear.png";
+       stampSurp.src = "img/surp.png";
+       stampEyes.src = "img/eyes.png";
+       var emoj = ["怒り","うんざり","恐れ","悲しみ","驚き","嬉しさ"]
+       var media = navigator.mediaDevices.getUserMedia({
+           video: {facingMode: "user"},
+           audio: false
+       });
+       media.then((stream) => {
+           video.srcObject = stream;
+       });
+       var tracker = new clm.tracker();
+       tracker.init(pModel);
+       tracker.start(video);
+       var classifier = new emotionClassifier();
+       classifier.init(emotionModel);
+       function drawLoop(){
+           requestAnimationFrame(drawLoop);
+           var positions = tracker.getCurrentPosition();
+           context.clearRect(0, 0, canvas.width, canvas.height);
+           //tracker.draw(canvas);
+           //showData(positions);
+           drawStamp(positions, stampNose, 62, 2.5, 0.0, 0.0);
+           drawStamp(positions, stampEars, 33, 3.0, 0.0, -1.8);
+           var parameters = tracker.getCurrentParameters();
+           var emotion = classifier.meanPredict(parameters);
+           //showEmotionData(emotion);
+           if(emotion[3].value > 0.4) {
+               drawStamp(positions, stampTear, 23, 0.4, 0.0, 0.8);
+               drawStamp(positions, stampTear, 28, 0.4, 0.0, 0.8);
+           }
+           if(emotion[4].value > 0.8) {
+            drawStamp(positions, stampSurp, 14, 1.0, 0.7, 0.0);
+           }
+           if(emotion[5].value > 0.4) {
+            drawStamp(positions, stampEyes, 27, 0.6, 0.0, 0.0);
+            drawStamp(positions, stampEyes, 32, 0.6, 0.0, 0.0);
+           }
+       }
+       drawLoop();
+       function showData(pos){
+           var str = "";
+           for(var i = 0; i < pos.length; i++){
+               str +="特徴点" + i + ": ("
+               + Math.round(pos[i][0])  + ","
+               + Math.round(pos[i][1]) + ")<br>";
+           }
+           var dat = document.getElementById("dat");
+           dat.innerHTML = str;
+       }
+       function drawStamp(pos, img, bNo, scale, hShift, vShift){
+           var eyes = pos[32][0] - pos[27][0];
+           var nose = pos[62][1] - pos[33][1];
+           var wScale = eyes / img.width;
+           var imgW = img.width * scale * wScale;
+           var imgH = img.height * scale * wScale;
+           var imgL = pos[bNo][0] - imgW / 2 + eyes * hShift;
+           var imgT = pos[bNo][1] - imgH / 2 + nose * vShift;
+           context.drawImage(img, imgL, imgT, imgW, imgH);
+       }
+       function showEmotionData(emo){
+           var str ="";
+           for(var i = 0; i < emo.length; i++){
+           str += emoj[i] + ": "
+           + emo[i].value.toFixed(1) + "<br>";
+       }
+       var dat = document.getElementById("dat");
+       dat.innerHTML = str;
+    }
+   </script>
+</body>
+</html>
